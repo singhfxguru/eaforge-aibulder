@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EAForge AI</title>
+<style>
+body{font-family:Arial;margin:0;background:#080d18;color:#eef2ff}.wrap{max-width:1100px;margin:auto;padding:24px}
+.card{background:#111827;border:1px solid #293653;border-radius:16px;padding:20px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}textarea,select{width:100%;box-sizing:border-box;background:#0b1220;color:white;border:1px solid #35415e;border-radius:10px;padding:12px}
+textarea{height:250px}button{padding:12px 18px;border:0;border-radius:10px;background:#7568ff;color:#fff;font-weight:700;margin-top:10px;cursor:pointer}
+pre{background:#070b13;padding:15px;border-radius:10px;overflow:auto;max-height:550px;font-size:12px;white-space:pre-wrap}
+.box{background:#0b1220;padding:14px;border-radius:10px;line-height:1.6}.muted{color:#9aa7bf}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="wrap">
+<div class="card"><h1>⚡ EAForge AI</h1><p class="muted">Describe a strategy → AI builds an MT4/MT5 EA draft.</p></div>
+<div class="card"><div class="grid"><div>
+<label>Platform</label><select id="platform"><option>MT5</option><option>MT4</option></select>
+<p><label>Strategy</label></p>
+<textarea id="strategy">Buy when EMA 20 crosses above EMA 50.
+Sell when EMA 20 crosses below EMA 50.
+Risk 1% per trade.
+Stop loss at previous candle low/high.
+Take profit at 1:2 risk reward.
+Only one trade at a time.</textarea>
+<button id="go">🤖 Generate EA</button><div id="status" class="muted"></div>
+</div><div><h3>Specification</h3><div id="spec" class="box">Waiting…</div>
+<h3>Code</h3><pre id="code">// Generated code will appear here.</pre>
+<button id="download">⬇ Download source</button></div></div></div>
+<div class="card"><b>Important:</b> Generated code is not a profitability guarantee. Compile, backtest and forward-test before live use.</div>
+</div>
+<script>
+let lastCode="", ext="mq5";
+const $=id=>document.getElementById(id);
+$("go").onclick=async()=>{
+  $("status").textContent="Generating…";
+  $("go").disabled=true;
+  try{
+    const platform=$("platform").value, strategy=$("strategy").value;
+    const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({platform,strategy})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||"Request failed");
+    $("spec").innerHTML="<b>Platform:</b> "+d.platform+"<br><br><b>Specification:</b><br>"+String(d.specification||"").replace(/\n/g,"<br>");
+    lastCode=d.code||""; ext=platform==="MT5"?"mq5":"mq4"; $("code").textContent=lastCode;
+    $("status").textContent="✅ Generated successfully";
+  }catch(e){$("status").textContent="❌ "+e.message}
+  finally{$("go").disabled=false}
+};
+$("download").onclick=()=>{
+ if(!lastCode)return alert("Generate code first.");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([lastCode],{type:"text/plain"}));a.download="EAForge_Generated."+ext;a.click();
+};
+</script></body></html>
