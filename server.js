@@ -54,7 +54,7 @@ function cleanJson(text) {
 
 async function askAI(prompt) {
   const response = await ai.models.generateContent({
-    model: "gemini-3.5-flash-Lite",
+    model: "gemini-2.5-flash-Lite",
     contents: prompt,
     config: {
       responseMimeType: "application/json"
