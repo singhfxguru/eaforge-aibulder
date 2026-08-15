@@ -1,1 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EAForge AI - Expert Advisor Builder</title>
 
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Arial,sans-serif;
+ background:#080d18;color:#eef2ff
+}
+.container{max-width:1100px;margin:auto;padding:25px}
+nav{
+ display:flex;justify-content:space-between;align-items:center;
+ padding:10px 0 35px
+}
+.logo{font-size:24px;font-weight:bold}
+.logo span{color:#7c6cff}
+.hero{text-align:center;padding:45px 10px}
+.hero h1{font-size:48px;margin:10px 0}
+.hero p{color:#9ca8bf;font-size:18px}
+.btn{
+ background:#7568ff;color:white;border:0;border-radius:10px;
+ padding:13px 20px;font-weight:bold;cursor:pointer
+}
+.card{
+ background:#111827;border:1px solid #293650;
+ border-radius:18px;padding:22px;margin-top:20px
+}
+.grid{
+ display:grid;grid-template-columns:1fr 1fr;gap:20px
+}
+label{display:block;margin:12px 0 7px;font-weight:bold}
+select,textarea{
+ width:100%;background:#080e19;color:white;
+ border:1px solid #35415d;border-radius:10px;
+ padding:13px;font-size:14px
+}
+textarea{height:260px;resize:vertical}
+.result{
+ background:#080e19;border-radius:12px;padding:16px;
+ min-height:260px;line-height:1.7
+}
+pre{
+ background:#050912;padding:15px;border-radius:10px;
+ overflow:auto;max-height:450px;color:#dbe5ff;
+ font-size:12px;white-space:pre-wrap
+}
+.status{margin-top:12px;color:#8ee6a8}
+.warning{
+ margin-top:20px;color:#9ca8bf;font-size:12px
+}
+@media(max-width:800px){
+ .grid{grid-template-columns:1fr}
+ .hero h1{font-size:36px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<nav>
+<div class="logo">⚡ EAForge <span>AI</span></div>
+<button class="btn" onclick="location.href='#builder'">
+Build EA
+</button>
+</nav>
+
+<section class="hero">
+<h1>Turn Your Strategy Into an EA</h1>
+
+<p>
+Describe your trading strategy in simple language.
+EAForge AI converts it into MT4 / MT5 Expert Advisor code.
+</p>
+
+<button class="btn" onclick="location.href='#builder'">
+🚀 Start Building
+</button>
+</section>
+
+<section id="builder" class="card">
+
+<h2>🤖 AI EA Builder</h2>
+
+<div class="grid">
+
+<div>
+
+<label>Platform</label>
+
+<select id="platform">
+<option value="MT5">MT5 — MQL5</option>
+<option value="MT4">MT4 — MQL4</option>
+</select>
+
+<label>Your Trading Strategy</label>
+
+<textarea id="strategy">Buy when EMA 20 crosses above EMA 50.
+
+Sell when EMA 20 crosses below EMA 50.
+
+Risk 1% per trade.
+
+Stop loss at previous candle low for BUY
+and previous candle high for SELL.
+
+Take profit at 1:2 risk reward.
+
+Only one trade at a time.</textarea>
+
+<button class="btn" onclick="generate()">
+🤖 Generate EA
+</button>
+
+<div id="status" class="status"></div>
+
+</div>
+
+<div>
+
+<h3>AI Specification</h3>
+
+<div id="spec" class="result">
+Your EA specification will appear here.
+</div>
+
+<h3>MQL4 / MQL5 Code</h3>
+
+<pre id="code">// Your generated EA code will appear here.</pre>
+
+<button class="btn" onclick="downloadCode()">
+⬇ Download EA Source
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<div class="warning">
+⚠️ Generated code is not guaranteed to be profitable.
+Always compile, backtest and forward-test an EA before using it
+with real money.
+</div>
+
+</div>
+
+<script>
+
+let generatedCode="";
+let extension="mq5";
+
+async function generate(){
+
+ const strategy=document.getElementById("strategy").value;
+ const platform=document.getElementById("platform").value;
+
+ if(strategy.length<10){
+   alert("Please describe your strategy.");
+   return;
+ }
+
+ const status=document.getElementById("status");
+
+ status.innerText="⏳ AI is building your EA...";
+ generatedCode="";
+
+ try{
+
+   const response=await fetch("/api/generate",{
+
+     method:"POST",
+
+     headers:{
+       "Content-Type":"application/json"
+     },
+
+     body:JSON.stringify({
+       platform:platform,
+       strategy:strategy
+     })
+
+   });
+
+   const data=await response.json();
+
+   if(!response.ok){
+      throw new Error(data.error || "AI request failed");
+   }
+
+   extension=platform==="MT5"?"mq5":"mq4";
+
+   document.getElementById("spec").innerHTML=
+     "<b>Platform:</b> "+data.platform+
+     "<br><br><b>Specification:</b><br>"+
+     String(data.specification || "").replace(/\n/g,"<br>");
+
+   generatedCode=data.code || "";
+
+   document.getElementById("code").innerText=generatedCode;
+
+   status.innerText="✅ EA generated successfully.";
+
+ }catch(error){
+
+   status.innerText="❌ "+error.message;
+
+ }
+
+}
+
+function downloadCode(){
+
+ if(!generatedCode){
+
+   alert("Generate the EA first.");
+
+   return;
+ }
+
+ const blob=new Blob(
+   [generatedCode],
+   {type:"text/plain"}
+ );
+
+ const url=URL.createObjectURL(blob);
+
+ const link=document.createElement("a");
+
+ link.href=url;
+
+ link.download="EAForge_Generated."+extension;
+
+ link.click();
+
+ URL.revokeObjectURL(url);
+
+}
+
+</script>
+
+</body>
+</html>
