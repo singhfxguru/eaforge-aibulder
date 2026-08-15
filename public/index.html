@@ -1,91 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EAForge AI - Expert Advisor Builder</title>
+<title>EAForge AI</title>
 
 <style>
 *{box-sizing:border-box}
+
 body{
- margin:0;font-family:Arial,sans-serif;
- background:#080d18;color:#eef2ff
+margin:0;
+background:#080d18;
+color:#eef2ff;
+font-family:Arial,sans-serif
 }
-.container{max-width:1100px;margin:auto;padding:25px}
-nav{
- display:flex;justify-content:space-between;align-items:center;
- padding:10px 0 35px
+
+.wrap{
+max-width:1150px;
+margin:auto;
+padding:24px
 }
-.logo{font-size:24px;font-weight:bold}
-.logo span{color:#7c6cff}
-.hero{text-align:center;padding:45px 10px}
-.hero h1{font-size:48px;margin:10px 0}
-.hero p{color:#9ca8bf;font-size:18px}
-.btn{
- background:#7568ff;color:white;border:0;border-radius:10px;
- padding:13px 20px;font-weight:bold;cursor:pointer
+
+.hero{
+text-align:center;
+padding:35px
 }
+
+.hero h1{
+font-size:44px
+}
+
 .card{
- background:#111827;border:1px solid #293650;
- border-radius:18px;padding:22px;margin-top:20px
+background:#111827;
+border:1px solid #293650;
+border-radius:18px;
+padding:22px;
+margin:20px 0
 }
+
 .grid{
- display:grid;grid-template-columns:1fr 1fr;gap:20px
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px
 }
-label{display:block;margin:12px 0 7px;font-weight:bold}
+
 select,textarea{
- width:100%;background:#080e19;color:white;
- border:1px solid #35415d;border-radius:10px;
- padding:13px;font-size:14px
+width:100%;
+background:#080e19;
+color:#fff;
+border:1px solid #35415d;
+border-radius:10px;
+padding:13px;
+margin:7px 0 14px
 }
-textarea{height:260px;resize:vertical}
-.result{
- background:#080e19;border-radius:12px;padding:16px;
- min-height:260px;line-height:1.7
+
+textarea{
+min-height:220px
 }
-pre{
- background:#050912;padding:15px;border-radius:10px;
- overflow:auto;max-height:450px;color:#dbe5ff;
- font-size:12px;white-space:pre-wrap
+
+.btn{
+background:#7568ff;
+color:#fff;
+border:0;
+border-radius:10px;
+padding:13px 18px;
+font-weight:bold;
+cursor:pointer;
+margin:5px 0
 }
-.status{margin-top:12px;color:#8ee6a8}
-.warning{
- margin-top:20px;color:#9ca8bf;font-size:12px
+
+.status{
+margin-top:10px;
+color:#8ee6a8
 }
+
+.err{
+color:#ff9b9b
+}
+
+.hidden{
+display:none
+}
+
+pre,.box{
+background:#050912;
+border-radius:10px;
+padding:15px;
+overflow:auto;
+white-space:pre-wrap
+}
+
 @media(max-width:800px){
- .grid{grid-template-columns:1fr}
- .hero h1{font-size:36px}
+.grid{
+grid-template-columns:1fr
+}
+
+.hero h1{
+font-size:34px
+}
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<nav>
-<div class="logo">⚡ EAForge <span>AI</span></div>
-<button class="btn" onclick="location.href='#builder'">
-Build EA
-</button>
-</nav>
+<div class="wrap">
 
 <section class="hero">
-<h1>Turn Your Strategy Into an EA</h1>
-
+<h1>⚡ EAForge AI</h1>
 <p>
-Describe your trading strategy in simple language.
-EAForge AI converts it into MT4 / MT5 Expert Advisor code.
+Generate platform-correct MT4/MQL4 and MT5/MQL5 Expert Advisors.
 </p>
-
-<button class="btn" onclick="location.href='#builder'">
-🚀 Start Building
-</button>
 </section>
 
-<section id="builder" class="card">
+<div>
+<button class="btn" onclick="tab('build')">
+🤖 EA Builder
+</button>
 
-<h2>🤖 AI EA Builder</h2>
+<button class="btn" onclick="tab('debug')">
+🛠 AI Debugger
+</button>
+</div>
+
+
+<!-- EA BUILDER -->
+
+<section id="build" class="card">
+
+<h2>EA Builder</h2>
 
 <div class="grid">
 
@@ -94,47 +137,52 @@ EAForge AI converts it into MT4 / MT5 Expert Advisor code.
 <label>Platform</label>
 
 <select id="platform">
-<option value="MT5">MT5 — MQL5</option>
-<option value="MT4">MT4 — MQL4</option>
+<option>MT4</option>
+<option>MT5</option>
 </select>
 
-<label>Your Trading Strategy</label>
 
-<textarea id="strategy">Buy when EMA 20 crosses above EMA 50.
+<label>Strategy</label>
+
+<textarea id="strategy">
+Buy when EMA 20 crosses above EMA 50.
 
 Sell when EMA 20 crosses below EMA 50.
 
 Risk 1% per trade.
 
-Stop loss at previous candle low for BUY
-and previous candle high for SELL.
+Stop loss at previous candle low/high.
 
 Take profit at 1:2 risk reward.
 
-Only one trade at a time.</textarea>
+Only one trade at a time.
+</textarea>
+
 
 <button class="btn" onclick="generate()">
-🤖 Generate EA
+🚀 Generate EA
 </button>
 
-<div id="status" class="status"></div>
+<div id="gs" class="status"></div>
 
 </div>
+
 
 <div>
 
-<h3>AI Specification</h3>
+<h3>Specification</h3>
 
-<div id="spec" class="result">
-Your EA specification will appear here.
+<div id="spec" class="box">
+—
 </div>
 
-<h3>MQL4 / MQL5 Code</h3>
 
-<pre id="code">// Your generated EA code will appear here.</pre>
+<h3>Code</h3>
 
-<button class="btn" onclick="downloadCode()">
-⬇ Download EA Source
+<pre id="code">—</pre>
+
+<button class="btn" onclick="download(codeText,'EAForge_Generated')">
+⬇ Download
 </button>
 
 </div>
@@ -143,103 +191,259 @@ Your EA specification will appear here.
 
 </section>
 
-<div class="warning">
-⚠️ Generated code is not guaranteed to be profitable.
-Always compile, backtest and forward-test an EA before using it
-with real money.
+
+
+<!-- AI DEBUGGER -->
+
+<section id="debug" class="card hidden">
+
+<h2>🛠 AI Compilation Error Fixer</h2>
+
+<p>
+MetaEditor के Compile errors और पूरा EA code यहाँ paste करें।
+</p>
+
+<div class="grid">
+
+<div>
+
+<label>Platform</label>
+
+<select id="dp">
+<option>MT4</option>
+<option>MT5</option>
+</select>
+
+
+<label>EA Code</label>
+
+<textarea
+id="dc"
+placeholder="Paste .mq4/.mq5 code">
+</textarea>
+
+
+<label>MetaEditor Errors</label>
+
+<textarea
+id="de"
+placeholder="Paste compiler errors">
+</textarea>
+
+
+<button class="btn" onclick="debugEA()">
+🛠 Fix Errors
+</button>
+
+<div id="ds" class="status"></div>
+
+</div>
+
+
+<div>
+
+<h3>Fix Summary</h3>
+
+<div id="sum" class="box">
+—
+</div>
+
+
+<h3>Corrected Code</h3>
+
+<pre id="fixed">—</pre>
+
+
+<button class="btn" onclick="download(fixedText,'EAForge_Fixed')">
+⬇ Download Fixed EA
+</button>
+
 </div>
 
 </div>
+
+</section>
+
+
+<p style="color:#9ca8bf;font-size:12px">
+Always compile and backtest generated code before real-money use.
+</p>
+
+</div>
+
 
 <script>
 
-let generatedCode="";
-let extension="mq5";
+let codeText="";
+let fixedText="";
 
-async function generate(){
 
- const strategy=document.getElementById("strategy").value;
- const platform=document.getElementById("platform").value;
+function tab(x){
 
- if(strategy.length<10){
-   alert("Please describe your strategy.");
-   return;
- }
+document
+.getElementById("build")
+.classList
+.toggle("hidden",x!=="build");
 
- const status=document.getElementById("status");
-
- status.innerText="⏳ AI is building your EA...";
- generatedCode="";
-
- try{
-
-   const response=await fetch("/api/generate",{
-
-     method:"POST",
-
-     headers:{
-       "Content-Type":"application/json"
-     },
-
-     body:JSON.stringify({
-       platform:platform,
-       strategy:strategy
-     })
-
-   });
-
-   const data=await response.json();
-
-   if(!response.ok){
-      throw new Error(data.error || "AI request failed");
-   }
-
-   extension=platform==="MT5"?"mq5":"mq4";
-
-   document.getElementById("spec").innerHTML=
-     "<b>Platform:</b> "+data.platform+
-     "<br><br><b>Specification:</b><br>"+
-     String(data.specification || "").replace(/\n/g,"<br>");
-
-   generatedCode=data.code || "";
-
-   document.getElementById("code").innerText=generatedCode;
-
-   status.innerText="✅ EA generated successfully.";
-
- }catch(error){
-
-   status.innerText="❌ "+error.message;
-
- }
+document
+.getElementById("debug")
+.classList
+.toggle("hidden",x!=="debug");
 
 }
 
-function downloadCode(){
 
- if(!generatedCode){
 
-   alert("Generate the EA first.");
+async function generate(){
 
-   return;
- }
+let p=platform.value;
 
- const blob=new Blob(
-   [generatedCode],
-   {type:"text/plain"}
- );
+let s=strategy.value;
 
- const url=URL.createObjectURL(blob);
+let st=gs;
 
- const link=document.createElement("a");
+st.textContent="⏳ Generating + platform checking...";
 
- link.href=url;
 
- link.download="EAForge_Generated."+extension;
+try{
 
- link.click();
+let r=await fetch(
+"/api/generate",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+platform:p,
+strategy:s
+})
+}
+);
 
- URL.revokeObjectURL(url);
+let d=await r.json();
+
+if(!r.ok)
+throw Error(d.error);
+
+
+codeText=d.code;
+
+spec.innerHTML=
+"<b>"+p+"</b><br><br>"+
+(d.specification||"");
+
+code.textContent=codeText;
+
+st.textContent=
+"✅ "+p+
+" code generated with platform check.";
+
+}
+
+catch(e){
+
+st.className="status err";
+
+st.textContent=
+"❌ "+e.message;
+
+}
+
+}
+
+
+
+async function debugEA(){
+
+let p=dp.value;
+
+let c=dc.value;
+
+let e=de.value;
+
+ds.className="status";
+
+ds.textContent=
+"⏳ AI debugging...";
+
+
+try{
+
+let r=await fetch(
+"/api/debug",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+platform:p,
+code:c,
+errors:e
+})
+}
+);
+
+let d=await r.json();
+
+if(!r.ok)
+throw Error(d.error);
+
+
+fixedText=d.code;
+
+sum.textContent=
+d.summary||"Fixes applied.";
+
+fixed.textContent=fixedText;
+
+ds.textContent=
+"✅ Corrected code generated. Compile again in MetaEditor.";
+
+}
+
+catch(e){
+
+ds.className="status err";
+
+ds.textContent=
+"❌ "+e.message;
+
+}
+
+}
+
+
+
+function download(t,n){
+
+if(!t){
+
+alert("Nothing to download");
+
+return;
+
+}
+
+let ext=
+(document.getElementById("dp").value==="MT4"
+?"mq4"
+:"mq5");
+
+let a=document.createElement("a");
+
+a.href=
+URL.createObjectURL(
+new Blob(
+[t],
+{type:"text/plain"}
+)
+);
+
+a.download=n+"."+ext;
+
+a.click();
 
 }
 
